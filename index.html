@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sistema Monetário - 5º Ano</title>
+
+<style>
+:root{
+  --primary:#6d5dfc;
+  --primary-dark:#4338ca;
+  --accent:#14b8a6;
+  --success:#22c55e;
+  --text:#27314f;
+  --muted:#6b7280;
+  --card:#f8fbff;
+  --soft:#eef3fb;
+  --gold:#f6c453;
+  --shadow-light:#ffffff;
+  --shadow-dark:#c6cfdd;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(109,93,252,.20), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(20,184,166,.18), transparent 35%),
+    linear-gradient(145deg,#e8eef8,#fbfdff);
+  color:var(--text);
+}
+.app{
+  min-height:100vh;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.screen{
+  display:none;
+  width:min(1260px,100%);
+  background:rgba(248,251,255,.88);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:34px;
+  padding:30px;
+  box-shadow:22px 22px 46px rgba(139,149,171,.45),-18px -18px 38px rgba(255,255,255,.92);
+}
+.screen.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.hero{display:grid;grid-template-columns:1.04fr .96fr;gap:30px;align-items:center}
+.hero h1{
+  font-size:clamp(2.25rem,5vw,4.1rem);
+  line-height:1.04;
+  margin:14px 0;
+  color:var(--primary-dark);
+  letter-spacing:-1.5px;
+}
+.hero p{color:var(--muted);line-height:1.65;font-size:1.15rem}
+.hero img,.activity-image{
+  width:100%;
+  border-radius:28px;
+  object-fit:cover;
+  background:linear-gradient(135deg,#eef3fb,#ffffff);
+  box-shadow:12px 12px 28px rgba(150,160,180,.46),-10px -10px 24px rgba(255,255,255,.95);
+}
+.hero img{height:min(430px,65vh)}
+.activity-image{
+  height:214px;
+  margin-bottom:16px;
+  display:block;
+  border:1px solid rgba(255,255,255,.75);
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:10px 16px;
+  border-radius:999px;
+  background:linear-gradient(145deg,#ffffff,#edf2fb);
+  color:var(--primary-dark);
+  font-weight:850;
+  box-shadow:inset 2px 2px 7px rgba(198,207,221,.8),inset -3px -3px 8px #fff;
+}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.progress-wrap{
+  width:100%;
+  height:17px;
+  background:#dfe7f4;
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:22px;
+  box-shadow:inset 3px 3px 8px #c7d1df,inset -3px -3px 8px #fff;
+}
+.progress{
+  height:100%;
+  width:0%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,var(--primary),var(--accent),var(--gold));
+  transition:width .35s ease;
+}
+.activity-layout{display:grid;grid-template-columns:320px 1fr;gap:24px}
+.side-card,.embed-card,.final-card{
+  border-radius:30px;
+  background:rgba(248,251,255,.94);
+  border:1px solid rgba(255,255,255,.7);
+  padding:22px;
+  box-shadow:12px 12px 28px rgba(150,160,180,.42),-10px -10px 24px rgba(255,255,255,.94);
+}
+.side-card h2{margin:0 0 10px;color:var(--primary-dark);letter-spacing:-.3px}
+.side-card p{color:var(--muted);line-height:1.57}
+.iframe-wrap{
+  width:100%;
+  min-height:68vh;
+  border-radius:26px;
+  overflow:hidden;
+  background:#fff;
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+  box-shadow:inset 3px 3px 10px rgba(199,209,223,.85),inset -3px -3px 10px #fff;
+}
+.activity-frame{
+  width:100%;
+  height:68vh;
+  min-height:540px;
+  border:0;
+  background:#fff;
+  display:block;
+}
+.loading-box{
+  width:100%;
+  min-height:540px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:30px;
+  color:var(--primary-dark);
+  font-weight:850;
+  font-size:1.2rem;
+  background:linear-gradient(145deg,#ffffff,#f0f5ff);
+}
+.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+button,.link-button{
+  border:none;
+  cursor:pointer;
+  border-radius:19px;
+  padding:15px 22px;
+  font-size:1rem;
+  font-weight:850;
+  color:#fff;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:54px;
+  box-shadow:8px 8px 18px rgba(156,166,188,.55),-7px -7px 16px rgba(255,255,255,.9);
+  transition:transform .18s ease,opacity .18s ease,filter .18s ease;
+}
+button:hover,.link-button:hover{transform:translateY(-2px) scale(1.02);filter:saturate(1.08)}
+.secondary{background:linear-gradient(135deg,#7b879c,#5e687c)}
+.success{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.next-btn{opacity:.42;pointer-events:none}
+.next-btn.ready{opacity:1;pointer-events:auto;animation:blinkNext .85s infinite}
+@keyframes blinkNext{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 rgba(109,93,252,0)}
+  50%{transform:scale(1.06);box-shadow:0 0 26px rgba(109,93,252,.72)}
+}
+.message{
+  margin-top:16px;
+  padding:14px 16px;
+  border-radius:18px;
+  background:#fff;
+  color:var(--muted);
+  font-weight:750;
+  box-shadow:inset 3px 3px 8px #d7deea,inset -3px -3px 8px #fff;
+}
+.message.done{color:var(--success)}
+.final-card{text-align:center}
+.final-card h1{color:var(--primary-dark);font-size:clamp(2.1rem,5vw,3.6rem);margin-bottom:8px}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:26px 0}
+.score-box{
+  background:#fff;
+  border-radius:24px;
+  padding:22px;
+  box-shadow:inset 4px 4px 10px #d7deea,inset -4px -4px 10px #fff;
+}
+.score-box strong{display:block;color:var(--primary-dark);font-size:2.25rem;margin-bottom:6px}
+.confetti{pointer-events:none;position:fixed;inset:0;overflow:hidden;z-index:1000}
+.confetti span{position:absolute;top:-20px;width:12px;height:12px;border-radius:4px;animation:fall 1.7s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@media(max-width:900px){
+  .hero,.activity-layout{grid-template-columns:1fr}
+  .screen{padding:20px;border-radius:26px}
+  .activity-frame,.loading-box{height:64vh;min-height:430px}
+  .iframe-wrap{min-height:430px}
+  .score-grid{grid-template-columns:1fr}
+  button,.link-button{width:100%}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<section id="startScreen" class="screen active">
+  <div class="hero">
+    <div>
+      <span class="badge">5º ano • Matemática</span>
+      <h1>Sistema Monetário Brasileiro</h1>
+      <p>Pratique atividades sobre <strong>cédulas, moedas, valores, compras, troco e situações-problema</strong>.</p>
+      <p>Ao terminar cada atividade, clique em <strong>Concluir atividade</strong>. O botão <strong>Próximo</strong> começará a piscar.</p>
+      <div class="buttons">
+        <button onclick="startActivity()">🚀 Começar</button>
+        <button class="secondary" onclick="speakIntro()">🔊 Ouvir Instruções</button>
+        <button class="secondary" onclick="toggleMute()" id="muteBtn">🔈 Som ligado</button>
+      </div>
+    </div>
+    <img id="startImg" alt="Sistema monetário brasileiro" />
+  </div>
+</section>
+
+<section id="activityScreen" class="screen">
+  <div class="topbar">
+    <span class="badge" id="pageBadge">Atividade 1</span>
+    <span class="badge" id="scoreBadge">Concluídas: 0</span>
+  </div>
+
+  <div class="progress-wrap"><div class="progress" id="progressBar"></div></div>
+
+  <div class="activity-layout">
+    <aside class="side-card">
+      <img id="activityImage" class="activity-image" alt="Imagem da atividade" />
+      <h2 id="activityTitle"></h2>
+      <p id="activityInstruction"></p>
+
+      <div class="buttons">
+        <button class="secondary" onclick="speakInstruction()">🔊 Ouvir</button>
+        <button class="success" onclick="markDone()">✅ Concluir atividade</button>
+      </div>
+
+      <div id="message" class="message">Faça a atividade no quadro. Depois clique em “Concluir atividade”.</div>
+    </aside>
+
+    <main class="embed-card">
+      <div id="iframeWrap" class="iframe-wrap">
+        <div class="loading-box">Carregando atividade...</div>
+      </div>
+
+
+      <div class="buttons">
+        <button id="nextBtn" class="next-btn" onclick="nextActivity()">Próximo ➜</button>
+      </div>
+    </main>
+  </div>
+</section>
+
+<section id="finalScreen" class="screen">
+  <div class="final-card">
+    <h1>🎉 Relatório Final</h1>
+    <p>Parabéns! Você concluiu a sequência sobre Sistema Monetário.</p>
+
+    <div class="score-grid">
+      <div class="score-box"><strong id="finalDone">0</strong>Atividades concluídas</div>
+      <div class="score-box"><strong id="finalPending">0</strong>Pendências</div>
+      <div class="score-box"><strong id="finalPercent">0%</strong>Aproveitamento</div>
+    </div>
+
+    <div class="buttons" style="justify-content:center;">
+      <button onclick="restart()">🔄 Refazer</button>
+      <button class="secondary" onclick="speakFinal()">🔊 Ouvir Relatório</button>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div id="confetti" class="confetti"></div>
+
+<script>
+const activities = [
+  {
+    title:"Atividade 1 - Valores em reais",
+    instruction:"Observe os valores apresentados e resolva a atividade sobre o sistema monetário brasileiro.",
+    image:"Brazilian real banknotes and coins on a classroom table, math activity, students hands visible",
+    embed:"https://wordwall.net/pt/embed/7a5bb820cd3c476ba26dc5200272e66d?themeId=1&templateId=5&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/7a5bb820cd3c476ba26dc5200272e66d?themeId=1&templateId=5&fontStackId=0"
+  },
+  {
+    title:"Atividade 2 - Cédulas e moedas",
+    instruction:"Identifique cédulas e moedas, comparando valores em reais e centavos.",
+    image:"Brazilian real coins and banknotes organized by value on a desk, educational math scene",
+    embed:"https://wordwall.net/pt/embed/806fcd1f118447e3a57762ab39fd6f34?themeId=1&templateId=5&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/806fcd1f118447e3a57762ab39fd6f34?themeId=1&templateId=5&fontStackId=0"
+  },
+  {
+    title:"Atividade 3 - Compras e preços",
+    instruction:"Leia os preços com atenção e resolva os desafios envolvendo compras.",
+    image:"child buying school supplies with price tags, Brazilian real money, realistic classroom market activity",
+    embed:"https://wordwall.net/pt/embed/22b20e4bd5874c148184b5c36838fd4c?themeId=1&templateId=5&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/22b20e4bd5874c148184b5c36838fd4c?themeId=1&templateId=5&fontStackId=0"
+  },
+  {
+    title:"Atividade 4 - Calculando valores",
+    instruction:"Some valores corretamente e escolha a resposta adequada.",
+    image:"student calculating money values with notebook pencil and Brazilian coins, real life classroom",
+    embed:"https://wordwall.net/pt/embed/b3e0eae2f2f74e5d85d901e971a80947?themeId=1&templateId=5&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/b3e0eae2f2f74e5d85d901e971a80947?themeId=1&templateId=5&fontStackId=0"
+  },
+  {
+    title:"Atividade 5 - Troco",
+    instruction:"Resolva situações envolvendo pagamento e troco.",
+    image:"cashier giving change in Brazilian real coins and banknotes, school market simulation",
+    embed:"https://wordwall.net/pt/embed/1fe30b86f4fa48fbb772e49ec763ca55?themeId=1&templateId=5&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/1fe30b86f4fa48fbb772e49ec763ca55?themeId=1&templateId=5&fontStackId=0"
+  },
+  {
+    title:"Atividade 6 - Problemas com dinheiro",
+    instruction:"Leia cada situação-problema e calcule o valor correto.",
+    image:"fifth grade student solving money word problems in math notebook, Brazilian currency on table",
+    embed:"https://wordwall.net/pt/embed/5561451034f0432ea65d558f7ff95436?themeId=41&templateId=22&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/5561451034f0432ea65d558f7ff95436?themeId=41&templateId=22&fontStackId=0"
+  },
+  {
+    title:"Atividade 7 - Sistema monetário",
+    instruction:"Revise conceitos importantes sobre o sistema monetário brasileiro.",
+    image:"Brazilian money educational poster with coins banknotes and price labels, classroom wall",
+    embed:"https://wordwall.net/pt/embed/36fec3633cd24e50801140ebd7eeef2f?themeId=1&templateId=46&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/36fec3633cd24e50801140ebd7eeef2f?themeId=1&templateId=46&fontStackId=0"
+  },
+  {
+    title:"Atividade 8 - Comparando quantias",
+    instruction:"Compare quantias em dinheiro e escolha a opção correta.",
+    image:"two groups of Brazilian coins and banknotes being compared on a school desk, math lesson",
+    embed:"https://wordwall.net/pt/embed/e59ec32335834f2c82891d5f86e3848d?themeId=1&templateId=5&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/e59ec32335834f2c82891d5f86e3848d?themeId=1&templateId=5&fontStackId=0"
+  },
+  {
+    title:"Atividade 9 - Reais e centavos",
+    instruction:"Pratique a relação entre reais e centavos em diferentes valores.",
+    image:"Brazilian cents coins and real banknotes with labels reais and centavos, realistic educational setup",
+    embed:"https://wordwall.net/pt/embed/a09c7d89a7ae4e828758793cc7f29160?themeId=1&templateId=5&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/a09c7d89a7ae4e828758793cc7f29160?themeId=1&templateId=5&fontStackId=0"
+  },
+  {
+    title:"Atividade 10 - Desafio monetário",
+    instruction:"Resolva o desafio usando seus conhecimentos sobre dinheiro, valores e operações.",
+    image:"math challenge with Brazilian real banknotes coins calculator and notebook, classroom table",
+    embed:"https://wordwall.net/pt/embed/17950c828a93495ab3f4645a74a0146a?themeId=1&templateId=3&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/17950c828a93495ab3f4645a74a0146a?themeId=1&templateId=3&fontStackId=0"
+  },
+  {
+    title:"Atividade 11 - Revisão final",
+    instruction:"Finalize revisando situações envolvendo compras, valores e troco.",
+    image:"students doing final review of Brazilian monetary system with play money and worksheet",
+    embed:"https://wordwall.net/pt/embed/7ce2ccceb01545088ee0e9a5ebfdd65a?themeId=1&templateId=5&fontStackId=0",
+    external:"https://wordwall.net/pt/embed/7ce2ccceb01545088ee0e9a5ebfdd65a?themeId=1&templateId=5&fontStackId=0"
+  }
+];
+
+let currentIndex = 0;
+let muted = false;
+let audioContext = null;
+const completed = new Array(activities.length).fill(false);
+
+const startScreen = document.getElementById("startScreen");
+const activityScreen = document.getElementById("activityScreen");
+const finalScreen = document.getElementById("finalScreen");
+const pageBadge = document.getElementById("pageBadge");
+const scoreBadge = document.getElementById("scoreBadge");
+const progressBar = document.getElementById("progressBar");
+const activityImage = document.getElementById("activityImage");
+const activityTitle = document.getElementById("activityTitle");
+const activityInstruction = document.getElementById("activityInstruction");
+const iframeWrap = document.getElementById("iframeWrap");
+const nextBtn = document.getElementById("nextBtn");
+const message = document.getElementById("message");
+const muteBtn = document.getElementById("muteBtn");
+
+document.getElementById("startImg").src = pollinationsUrl("Brazilian monetary system lesson, real banknotes coins calculator and fifth grade students in classroom", 999);
+
+document.querySelectorAll("img").forEach(img=>{
+  img.onerror=()=>{
+    img.onerror=null;
+    img.src=fallbackSvg("Sistema Monetário");
+  };
+});
+
+function startActivity(){
+  currentIndex=0;
+  showScreen(activityScreen);
+  loadActivity();
+  speakInstruction();
+}
+
+function showScreen(screen){
+  startScreen.classList.remove("active");
+  activityScreen.classList.remove("active");
+  finalScreen.classList.remove("active");
+  screen.classList.add("active");
+}
+
+function pollinationsUrl(prompt, seed = 101){
+  const fullPrompt = `${prompt}, photorealistic, high resolution, real life, high detail`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=900&height=600&nologo=true&seed=${seed}`;
+}
+
+function fallbackSvg(text){
+  const safeText=String(text).replace(/[<>&"]/g,"");
+  const svg=`
+  <svg xmlns="http://www.w3.org/2000/svg" width="900" height="600">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+        <stop stop-color="#6d5dfc"/>
+        <stop offset=".55" stop-color="#14b8a6"/>
+        <stop offset="1" stop-color="#f6c453"/>
+      </linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#g)"/>
+    <circle cx="160" cy="130" r="70" fill="rgba(255,255,255,.18)"/>
+    <circle cx="730" cy="460" r="100" fill="rgba(255,255,255,.16)"/>
+    <text x="50%" y="42%" dominant-baseline="middle" text-anchor="middle"
+      font-family="Arial" font-size="44" fill="white" font-weight="700">Sistema Monetário</text>
+    <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
+      font-family="Arial" font-size="26" fill="white">${safeText}</text>
+  </svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function setActivityImage(activity, seed){
+  activityImage.onerror=()=>{
+    activityImage.onerror=null;
+    activityImage.src=fallbackSvg(activity.title);
+  };
+
+  // Garante que a primeira atividade sempre mostre imagem imediatamente.
+  if(currentIndex === 0){
+    activityImage.src = fallbackSvg("Valores em reais");
+    const preload = new Image();
+    preload.onload = () => activityImage.src = preload.src;
+    preload.onerror = () => activityImage.src = fallbackSvg("Valores em reais");
+    preload.src = pollinationsUrl(activity.image, seed);
+    return;
+  }
+
+  activityImage.src=pollinationsUrl(activity.image, seed);
+}
+
+function loadActivity(){
+  const activity=activities[currentIndex];
+
+  pageBadge.textContent=`Atividade ${currentIndex+1} de ${activities.length}`;
+  activityTitle.textContent=activity.title;
+  activityInstruction.textContent=activity.instruction;
+
+  setActivityImage(activity, currentIndex + 100);
+  activityImage.alt=activity.title;
+
+
+  if(completed[currentIndex]){
+    message.textContent="Atividade já concluída. Você pode revisar ou seguir para a próxima.";
+    message.classList.add("done");
+    nextBtn.classList.add("ready");
+  }else{
+    message.textContent="Faça a atividade no quadro. Depois clique em “Concluir atividade”.";
+    message.classList.remove("done");
+    nextBtn.classList.remove("ready");
+  }
+
+  nextBtn.textContent=currentIndex===activities.length-1 ? "Finalizar ➜" : "Próximo ➜";
+  renderIframe(activity.embed);
+  updateScore();
+}
+
+function renderIframe(src){
+  iframeWrap.innerHTML='<div class="loading-box">Carregando atividade...</div>';
+
+  setTimeout(()=>{
+    iframeWrap.innerHTML="";
+    const iframe=document.createElement("iframe");
+    iframe.className="activity-frame";
+    iframe.src=src;
+    iframe.width="500";
+    iframe.height="380";
+    iframe.frameBorder="0";
+
+    // Sem allowfullscreen e sem allow="fullscreen" para impedir aumento/tela cheia.
+    iframe.allowFullscreen = false;
+    iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
+    iframe.setAttribute("allow","autoplay; clipboard-read; clipboard-write");
+    iframe.setAttribute("referrerpolicy","no-referrer-when-downgrade");
+    iframe.setAttribute("title",activities[currentIndex].title);
+
+    iframeWrap.appendChild(iframe);
+  },250);
+}
+
+function markDone(){
+  completed[currentIndex]=true;
+  message.textContent="Muito bem! Agora o botão Próximo está liberado.";
+  message.classList.add("done");
+  nextBtn.classList.add("ready");
+  updateScore();
+  playSuccessSound();
+  launchConfetti();
+}
+
+function nextActivity(){
+  if(!completed[currentIndex]){
+    message.textContent="Antes de avançar, clique em “Concluir atividade”.";
+    message.classList.remove("done");
+    playErrorSound();
+    return;
+  }
+
+  iframeWrap.innerHTML="";
+
+  if(currentIndex<activities.length-1){
+    currentIndex++;
+    loadActivity();
+    speakInstruction();
+  }else{
+    finishActivity();
+  }
+}
+
+function updateScore(){
+  const done=completed.filter(Boolean).length;
+  scoreBadge.textContent=`Concluídas: ${done}`;
+  progressBar.style.width=`${(done/activities.length)*100}%`;
+}
+
+function finishActivity(){
+  iframeWrap.innerHTML="";
+  showScreen(finalScreen);
+
+  const done=completed.filter(Boolean).length;
+  const pending=activities.length-done;
+  const percent=Math.round((done/activities.length)*100);
+
+  document.getElementById("finalDone").textContent=done;
+  document.getElementById("finalPending").textContent=pending;
+  document.getElementById("finalPercent").textContent=`${percent}%`;
+
+  playSuccessSound();
+  launchConfetti();
+  speakFinal();
+}
+
+function restart(){
+  window.speechSynthesis.cancel();
+  currentIndex=0;
+  completed.fill(false);
+  iframeWrap.innerHTML="";
+  progressBar.style.width="0%";
+  scoreBadge.textContent="Concluídas: 0";
+  nextBtn.classList.remove("ready");
+  message.classList.remove("done");
+  message.textContent="Faça a atividade no quadro. Depois clique em “Concluir atividade”.";
+  showScreen(startScreen);
+}
+
+function getBrazilianPortugueseVoice(){
+  if(!("speechSynthesis" in window)) return null;
+
+  const voices = window.speechSynthesis.getVoices();
+
+  const exactPtBr = voices.find(v =>
+    String(v.lang).toLowerCase() === "pt-br"
+  );
+
+  if(exactPtBr) return exactPtBr;
+
+  const brazilNamed = voices.find(v => {
+    const name = String(v.name).toLowerCase();
+    const lang = String(v.lang).toLowerCase();
+
+    return lang.startsWith("pt") && (
+      name.includes("brasil") ||
+      name.includes("brazil") ||
+      name.includes("português") ||
+      name.includes("portugues") ||
+      name.includes("maria") ||
+      name.includes("luciana") ||
+      name.includes("daniel")
+    );
+  });
+
+  if(brazilNamed) return brazilNamed;
+
+  const anyPortuguese = voices.find(v =>
+    String(v.lang).toLowerCase().startsWith("pt")
+  );
+
+  return anyPortuguese || null;
+}
+
+function speak(text){
+  if(muted || !("speechSynthesis" in window)) return;
+
+  window.speechSynthesis.cancel();
+
+  const speakNow = () => {
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Força a narração para português do Brasil.
+    utterance.lang = "pt-BR";
+    utterance.rate = 0.95;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    const voice = getBrazilianPortugueseVoice();
+
+    if(voice){
+      utterance.voice = voice;
+      utterance.lang = voice.lang || "pt-BR";
+    }
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const voices = window.speechSynthesis.getVoices();
+
+  if(voices.length === 0){
+    setTimeout(speakNow, 350);
+  }else{
+    speakNow();
+  }
+}
+
+function speakIntro(){
+  speak("Bem-vindo à atividade de matemática do quinto ano sobre sistema monetário brasileiro. Você verá uma atividade por página. Faça a atividade no quadro. Quando terminar, clique em concluir atividade. O botão próximo vai piscar para você avançar.");
+}
+
+function speakInstruction(){
+  const activity=activities[currentIndex];
+  speak(`Atividade ${currentIndex+1}. ${activity.title}. ${activity.instruction}`);
+}
+
+function speakFinal(){
+  const done=completed.filter(Boolean).length;
+  const percent=Math.round((done/activities.length)*100);
+  speak(`Relatório final. Você concluiu ${done} de ${activities.length} atividades sobre sistema monetário. Seu aproveitamento foi de ${percent} por cento. Parabéns pelo esforço.`);
+}
+
+function toggleMute(){
+  muted=!muted;
+  window.speechSynthesis.cancel();
+  muteBtn.textContent=muted ? "🔇 Som desligado" : "🔈 Som ligado";
+}
+
+function getAudioContext(){
+  if(!audioContext){
+    audioContext=new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioContext;
+}
+
+function playTone(frequency,duration,type="sine",delay=0){
+  if(muted) return;
+  const ctx=getAudioContext();
+  const oscillator=ctx.createOscillator();
+  const gain=ctx.createGain();
+
+  oscillator.type=type;
+  oscillator.frequency.setValueAtTime(frequency,ctx.currentTime+delay);
+
+  gain.gain.setValueAtTime(.0001,ctx.currentTime+delay);
+  gain.gain.exponentialRampToValueAtTime(.24,ctx.currentTime+delay+.02);
+  gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+delay+duration);
+
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+  oscillator.start(ctx.currentTime+delay);
+  oscillator.stop(ctx.currentTime+delay+duration);
+}
+
+function playSuccessSound(){
+  playTone(660,.14,"triangle",0);
+  playTone(880,.16,"triangle",.13);
+  playTone(1100,.22,"triangle",.28);
+}
+
+function playErrorSound(){
+  playTone(180,.16,"sawtooth",0);
+  playTone(130,.18,"sawtooth",.18);
+}
+
+function launchConfetti(){
+  const confetti=document.getElementById("confetti");
+  confetti.innerHTML="";
+  const colors=["#6d5dfc","#14b8a6","#f6c453","#fb7185","#8b5cf6"];
+
+  for(let i=0;i<60;i++){
+    const piece=document.createElement("span");
+    piece.style.left=`${Math.random()*100}%`;
+    piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDelay=`${Math.random()*.35}s`;
+    piece.style.transform=`rotate(${Math.random()*360}deg)`;
+    confetti.appendChild(piece);
+  }
+
+  setTimeout(()=>confetti.innerHTML="",2200);
+}
+
+if("speechSynthesis" in window){
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
+
+  // Pré-carrega as vozes para aumentar a chance de selecionar pt-BR corretamente.
+  window.speechSynthesis.getVoices();
+}
+</script>
+</body>
+</html>
